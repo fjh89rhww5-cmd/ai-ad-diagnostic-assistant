@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>效果总览排版预览</title>
+  <style>
+    :root {
+      --ink: #2d3448;
+      --muted: #7d879b;
+      --line: #e7eaf2;
+      --canvas: #f7f5fc;
+      --purple: #7376d8;
+      --purple-dark: #565bb8;
+      --purple-soft: #f0f0ff;
+      --green: #34866e;
+      --green-soft: #e8f5ef;
+      --yellow: #fff8df;
+      --orange: #fff0e2;
+      --red: #fff0f0;
+      --shadow: 0 8px 24px rgba(54, 61, 92, .055);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--canvas); color: var(--ink);
+      font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+    }
+    .page { width: min(1320px, calc(100% - 48px)); margin: 38px auto 64px; }
+    .heading {
+      display: flex; align-items: center; justify-content: space-between; gap: 20px;
+      padding: 24px 28px; border: 1px solid #e3e7f4; border-radius: 18px;
+      background: linear-gradient(115deg, #fff, #f5f6ff); box-shadow: var(--shadow);
+    }
+    .eyebrow { color: var(--purple-dark); font-size: 12px; font-weight: 750; letter-spacing: .09em; }
+    h1 { margin: 7px 0 5px; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.04em; }
+    .subtitle, .muted { color: var(--muted); }
+    .subtitle { margin: 0; font-size: 15px; }
+    .sample-chip { white-space: nowrap; padding: 9px 13px; border-radius: 999px; color: var(--purple-dark); background: var(--purple-soft); border: 1px solid #e0e2fb; font-size: 13px; font-weight: 650; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 22px 0 18px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+    .kpi { min-height: 126px; padding: 19px 21px; }
+    .kpi-label { color: var(--muted); font-size: 14px; font-weight: 600; }
+    .kpi-value { margin-top: 14px; font-size: 31px; line-height: 1; font-weight: 760; letter-spacing: -.035em; }
+    .kpi-note { margin-top: 9px; color: #9098aa; font-size: 12px; }
+    .summary { padding: 17px 21px; margin-bottom: 22px; }
+    .summary-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 13px; }
+    .summary-title { font-size: 16px; font-weight: 730; }
+    .summary-caption { margin-top: 4px; color: var(--muted); font-size: 12px; }
+    .counts { display: flex; flex-wrap: wrap; gap: 9px; }
+    .count { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; font-size: 13px; font-weight: 650; }
+    .count strong { font-size: 16px; }
+    .yellow { background: var(--yellow); color: #735d1a; }
+    .orange { background: var(--orange); color: #814b1b; }
+    .red { background: var(--red); color: #843b42; }
+    .top-finding { margin-top: 13px; padding: 12px 14px; border-radius: 11px; background: var(--purple-soft); color: #50558e; font-size: 13px; line-height: 1.55; }
+    .tabs { display: flex; gap: 25px; padding: 0 6px; border-bottom: 1px solid var(--line); margin-bottom: 25px; }
+    .tab { padding: 0 2px 13px; color: #687187; font-size: 15px; font-weight: 650; }
+    .tab.active { color: var(--purple-dark); border-bottom: 3px solid var(--purple); }
+    .section { margin: 0 0 22px; }
+    .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin: 0 2px 13px; }
+    h2 { margin: 0; font-size: 22px; letter-spacing: -.025em; }
+    .section-heading p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .funnel-panel { padding: 21px 22px 16px; }
+    .funnel { display: grid; grid-template-columns: minmax(0,1fr) 38px minmax(0,1fr) 38px minmax(0,1fr); align-items: center; gap: 8px; }
+    .stage { min-height: 156px; padding: 17px 18px; border: 1px solid var(--line); border-top: 3px solid var(--purple); border-radius: 13px; background: #fff; }
+    .stage-label { color: var(--muted); font-size: 13px; font-weight: 650; }
+    .stage-rate { margin: 14px 0 10px; color: var(--purple-dark); font-size: 30px; font-weight: 760; letter-spacing: -.03em; }
+    .stage-count { color: #737d91; font-size: 12px; line-height: 1.55; }
+    .arrow { color: var(--purple); text-align: center; font-size: 25px; font-weight: 700; }
+    .footnote { margin: 14px 2px 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .chart-card { padding: 21px 22px 17px; }
+    .chart-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(230px, .8fr); gap: 24px; align-items: center; }
+    .chart { width: 100%; height: auto; display: block; }
+    .chart-aside { padding: 16px; background: #f8f8ff; border: 1px solid #ececff; border-radius: 13px; }
+    .aside-title { font-weight: 720; font-size: 14px; }
+    .chart-aside p { margin: 8px 0 0; color: #687187; font-size: 13px; line-height: 1.65; }
+    .chart-aside .good { display: inline-block; margin-top: 12px; padding: 6px 9px; border-radius: 999px; background: var(--green-soft); color: var(--green); font-size: 12px; font-weight: 700; }
+    .plan-note { margin-top: 26px; padding: 15px 18px; border: 1px dashed #c8caed; border-radius: 13px; color: #60658f; background: #f5f5ff; font-size: 13px; line-height: 1.7; }
+    @media (max-width: 850px) {
+      .page { width: min(100% - 30px, 680px); margin-top: 18px; }
+      .kpis { grid-template-columns: repeat(2, 1fr); }
+      .funnel { grid-template-columns: 1fr; gap: 6px; }
+      .stage { min-height: auto; }
+      .arrow { transform: rotate(90deg); line-height: 1; }
+      .chart-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 520px) {
+      .page { width: calc(100% - 22px); margin-top: 11px; }
+      .heading { align-items: flex-start; flex-direction: column; padding: 19px; }
+      .kpis { gap: 10px; margin-top: 13px; }
+      .kpi { min-height: 108px; padding: 15px; }
+      .kpi-value { font-size: 25px; }
+      .summary, .funnel-panel, .chart-card { padding: 16px; }
+      .tabs { gap: 17px; overflow-x: auto; white-space: nowrap; }
+      .section-heading { align-items: flex-start; flex-direction: column; }
+      h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="heading">
+      <div>
+        <div class="eyebrow">广告效果分析工作台</div>
+        <h1>AI 广告投放诊断助手</h1>
+        <p class="subtitle">先看整体表现，再沿着转化过程找到值得关注的环节。</p>
+      </div>
+      <span class="sample-chip">版面预览 · 示例数据</span>
+    </header>
+
+    <section class="kpis" aria-label="核心指标">
+      <article class="card kpi"><div class="kpi-label">广告系列数</div><div class="kpi-value">6</div><div class="kpi-note">本次文件包含的系列</div></article>
+      <article class="card kpi"><div class="kpi-label">总花费</div><div class="kpi-value">¥ 12,480</div><div class="kpi-note">已汇总完整记录</div></article>
+      <article class="card kpi"><div class="kpi-label">整体 CTR</div><div class="kpi-value">1.61%</div><div class="kpi-note">点击次数 ÷ 曝光次数</div></article>
+      <article class="card kpi"><div class="kpi-label">整体 ROAS</div><div class="kpi-value">2.84</div><div class="kpi-note">成交金额 GMV ÷ 花费</div></article>
+    </section>
+
+    <section class="card summary">
+      <div class="summary-head">
+        <div><div class="summary-title">本次诊断重点</div><div class="summary-caption">按规则线索的关注程度汇总，帮助你快速决定先看哪里。</div></div>
+      </div>
+      <div class="counts">
+        <span class="count yellow">留意 <strong>3</strong> 条</span>
+        <span class="count orange">需要关注 <strong>2</strong> 条</span>
+        <span class="count red">优先核查 <strong>1</strong> 条</span>
+      </div>
+      <div class="top-finding"><strong>建议先查看 · 优先核查</strong>　某广告系列有花费但 GMV 汇总为 0；建议先确认成交回传和归因口径。</div>
+    </section>
+
+    <nav class="tabs" aria-label="分析页面">
+      <span class="tab active">效果总览</span><span class="tab">诊断建议</span><span class="tab">影响因素</span><span class="tab">数据明细</span>
+    </nav>
+
+    <section class="section">
+      <div class="section-heading"><div><h2>分阶段转化过程</h2><p>按先后顺序查看每一段的转化表现和计算分母。</p></div></div>
+      <div class="card funnel-panel">
+        <div class="funnel">
+          <article class="stage"><div class="stage-label">01 · 曝光 → 点击</div><div class="stage-rate">1.61%</div><div class="stage-count">点击次数 7,080<br>曝光次数 439,000</div></article>
+          <div class="arrow" aria-hidden="true">→</div>
+          <article class="stage"><div class="stage-label">02 · 点击 → 页面浏览</div><div class="stage-rate">82.80%</div><div class="stage-count">页面浏览 PV 5,862<br>点击次数 7,080</div></article>
+          <div class="arrow" aria-hidden="true">→</div>
+          <article class="stage"><div class="stage-label">03 · 访问用户 → 付费用户</div><div class="stage-rate">2.59%</div><div class="stage-count">付费用户 Paid UV 122<br>访问用户 UV 4,710</div></article>
+        </div>
+        <p class="footnote">这是分阶段观察，不是严格连续的用户漏斗。PV 是浏览次数，UV 和 Paid UV 是去重人数；不同阶段的比率口径不同。</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading"><div><h2>广告系列 ROAS 对比</h2><p>对照各系列的成交金额与花费效率。</p></div></div>
+      <div class="card chart-card">
+        <div class="chart-layout">
+          <svg class="chart" viewBox="0 0 720 260" role="img" aria-label="六个广告系列 ROAS 柱状图">
+            <g stroke="#e8eaf2" stroke-width="1"><line x1="58" y1="28" x2="700" y2="28"/><line x1="58" y1="78" x2="700" y2="78"/><line x1="58" y1="128" x2="700" y2="128"/><line x1="58" y1="178" x2="700" y2="178"/><line x1="58" y1="218" x2="700" y2="218"/></g>
+            <g fill="#8991a4" font-size="12" font-family="sans-serif"><text x="22" y="222">0</text><text x="22" y="182">1</text><text x="22" y="132">2</text><text x="22" y="82">3</text><text x="22" y="32">4</text></g>
+            <g fill="#8288df"><path d="M98 103h44q7 0 7 7v108H91V110q0-7 7-7z"/><path d="M201 128h44q7 0 7 7v83h-58v-83q0-7 7-7z"/><path d="M304 78h44q7 0 7 7v133h-58V85q0-7 7-7z"/><path d="M407 153h44q7 0 7 7v58h-58v-58q0-7 7-7z"/><path d="M510 53h44q7 0 7 7v158h-58V60q0-7 7-7z"/><path d="M613 128h44q7 0 7 7v83h-58v-83q0-7 7-7z"/></g>
+            <g fill="#535a6e" font-size="12" font-family="sans-serif" text-anchor="middle"><text x="120" y="96">2.3</text><text x="223" y="121">1.8</text><text x="326" y="71">2.8</text><text x="429" y="146">1.3</text><text x="532" y="46">3.3</text><text x="635" y="121">1.8</text><text x="120" y="242">春季A</text><text x="223" y="242">新品B</text><text x="326" y="242">品牌C</text><text x="429" y="242">兴趣D</text><text x="532" y="242">转化E</text><text x="635" y="242">测试F</text></g>
+          </svg>
+          <aside class="chart-aside"><div class="aside-title">怎么读这张图</div><p>柱形越高，表示当前文件中的 ROAS 越高。这个比较只用于同一份数据内观察，不能单独证明某个因素导致了差异。</p><span class="good">配色与全页保持一致</span></aside>
+        </div>
+        <p class="footnote">图表按广告系列汇总；ROAS = 成交金额 GMV ÷ 花费。未提供 GMV 时保留原有的缺失提示。</p>
+      </div>
+    </section>
+
+    <div class="plan-note"><strong>这版预览准备调整的重点：</strong>统一卡片圆角、边框和留白；用标题和简短说明建立层级；把转化链路和系列图表各自放进独立区域；窄屏下指标卡变两列、转化链路改为纵向。示例数值仅用于看排版，不代表真实投放结果。</div>
+  </main>
+</body>
+</html>

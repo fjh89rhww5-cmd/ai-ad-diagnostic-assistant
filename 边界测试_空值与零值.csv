@@ -1,0 +1,3 @@
+campaign_name,cost,impressions,clicks,pv,uv,paid_uv,gmv
+明确记录零点击系列,300,20000,0,0,0,0,0
+点击数据缺失系列,450,30000,,0,0,0,0
